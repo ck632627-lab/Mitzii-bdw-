@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday, Liyon! 🎂</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #fff8f5 0%, #f3d7cf 100%);
+            font-family: 'Poppins', sans-serif;
+            color: #4a3238;
+            user-select: none;
+        }
+
+        #sceneCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            z-index: 1;
+        }
+
+        /* Start Gate */
+        #startGate {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: radial-gradient(circle at center, rgba(255, 249, 246, 0.98), rgba(244, 217, 209, 0.98));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            transition: opacity 0.55s ease;
+        }
+
+        .gate-sub {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1rem;
+            color: #8f6b73;
+            margin-bottom: 6px;
+        }
+
+        .gate-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(2.6rem, 8vw, 3.8rem);
+            color: #c9336b;
+            line-height: 1.1;
+        }
+
+        .gate-age {
+            font-size: 0.92rem;
+            color: #7c5860;
+            margin: 6px 0 24px;
+        }
+
+        .open-btn {
+            padding: 12px 28px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #ff6b9d, #d93872);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(217, 56, 114, 0.3);
+        }
+
+        /* Sound Button */
+        .sound-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 45;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(168, 92, 118, 0.35);
+            background: rgba(255, 255, 255, 0.78);
+            color: #8c3b58;
+            font-size: 0.9rem;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Big Wish Card next to the Blossom Tree */
+        .tree-wish-card {
+            position: fixed;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-52%) translateY(16px);
+            z-index: 15;
+            width: min(360px, calc(100vw - 145px));
+            background: rgba(255, 252, 250, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(224, 92, 140, 0.32);
+            border-radius: 20px;
+            padding: 18px 18px;
+            box-shadow: 0 14px 32px rgba(155, 62, 98, 0.16);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        @media (max-width: 560px) {
+            .tree-wish-card {
+                left: 14px;
+                top: 12%;
+                transform: translateY(12px);
+                width: calc(100vw - 28px);
+                padding: 15px 16px;
+            }
+        }
+
+        .tree-wish-card.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-52%);
+        }
+
+        @media (max-width: 560px) {
+            .tree-wish-card.show {
+                transform: translateY(0);
+            }
+        }
+
+        .wish-eyebrow {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.78rem;
+            color: #9c6b77;
+            margin-bottom: 4px;
+        }
+
+        .wish-heading {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.7rem, 5.5vw, 2.25rem);
+            color: #c72864;
+            line-height: 1.15;
+            margin-bottom: 10px;
+        }
+
+        .wish-body {
+            font-size: clamp(0.82rem, 3.3vw, 0.93rem);
+            line-height: 1.55;
+            color: #4b2d36;
+            margin-bottom: 10px;
+        }
+
+        .wish-love {
+            font-size: clamp(0.84rem, 3.4vw, 0.95rem);
+            font-weight: 600;
+            color: #9e2352;
+            line-height: 1.45;
+        }
+
+        /* Action Buttons at Bottom */
+        .tree-actions {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        .tree-actions.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pill-btn {
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(201, 51, 107, 0.35);
+            background: rgba(255, 255, 255, 0.9);
+            color: #9e2755;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(160, 75, 105, 0.16);
+            white-space: nowrap;
+        }
+
+        .pill-btn.primary {
+            background: linear-gradient(135deg, #ff6b9d, #d93872);
+            color: #fff;
+            border: none;
+        }
+
+        /* Reliable Photo Memory Book Modal */
+        #bookOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            background: rgba(48, 20, 30, 0.62);
+            backdrop-filter: blur(8px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #bookOverlay.open {
+            display: flex;
+            animation: popFade 0.25s ease;
+        }
+
+        @keyframes popFade {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .book-card {
+            width: 100%;
+            max-width: 310px;
+            background: #fff9f7;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 18px 40px rgba(45, 14, 25, 0.35);
+            border: 2px solid #ff9ec0;
+            text-align: center;
+        }
+
+        .book-header-tag {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 999px;
+            background: #ffe3ed;
+            color: #b82c60;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .book-photo-box {
+            width: 100%;
+            height: 225px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid #ff8ab2;
+            background: #fce8ef;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .book-photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.25s ease, transform 0.3s ease;
+        }
+
+        .book-caption-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.7rem;
+            color: #c9336b;
+            margin-bottom: 4px;
+        }
+
+        .book-caption-sub {
+            font-size: 0.8rem;
+            color: #6b4750;
+            margin-bottom: 14px;
+        }
+
+        .book-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid #f0a8c2;
+            background: #fff;
+            color: #a82959;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-btn.next {
+            background: linear-gradient(135deg, #ff6b9d, #d93872);
+            color: #fff;
+            border: none;
+        }
+
+        .close-book-btn {
+            margin-top: 12px;
+            padding: 7px 22px;
+            border-radius: 999px;
+            border: none;
+            background: #fff;
+            color: #b82c60;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .made-by {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 70;
+            font-size: 0.72rem;
+            color: rgba(110, 68, 82, 0.85);
+            letter-spacing: 0.6px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Song -->
+    <audio id="bgAudio" src="https://files.catbox.moe/7p0ad0.mp3" loop preload="auto"></audio>
+
+    <button class="sound-btn" id="soundBtn" onclick="toggleAudio()" title="Sound">🔊</button>
+
+    <!-- Start Gate -->
+    <div id="startGate">
+        <div class="gate-sub">a little something, for you</div>
+        <div class="gate-title">Liyon</div>
+        <div class="gate-age">10th Birthday Special</div>
+        <button class="open-btn" onclick="beginScene()">Tap to Open 🏹</button>
+    </div>
+
+    <!-- Main 3D-Shaded Canvas -->
+    <canvas id="sceneCanvas"></canvas>
+
+    <!-- Big Wish Card next to the Blossom Tree -->
+    <div class="tree-wish-card" id="treeWishCard">
+        <div class="wish-eyebrow">and... make it count</div>
+        <div class="wish-heading">🎂 Happy Birthday, Liyon! ❤️</div>
+        <div class="wish-body">
+            May your life always be filled with happiness, love, and success. May all your dreams come true. Keep smiling and shining always!
+        </div>
+        <div class="wish-love">
+            So lucky to have you as my little brother. Love you! 🫂❤️
+        </div>
+    </div>
+
+    <!-- Actions on Blossom Tree Screen -->
+    <div class="tree-actions" id="treeActions">
+        <button class="pill-btn primary" onclick="openMemoryBook()">📖 Liyon's Memory Book</button>
+        <button class="pill-btn" onclick="restartAll()">Replay ↻</button>
+    </div>
+
+    <!-- Memory Book Modal with all 3 photos clearly shown -->
+    <div id="bookOverlay">
+        <div class="book-card">
+            <div class="book-header-tag" id="bookPageTag">Liyon's Memory Book • 1 / 3</div>
+            <div class="book-photo-box">
+                <img id="bookActiveImg" src="https://files.catbox.moe/zllc84.jpg" alt="Liyon Memory">
+            </div>
+            <div class="book-caption-title" id="bookPhotoTitle">Little Liyon</div>
+            <div class="book-caption-sub" id="bookPhotoSub">Turning 10 today • Always smiling!</div>
+            <div class="book-nav">
+                <button class="nav-btn" onclick="prevBookPhoto()">◀ Prev</button>
+                <button class="nav-btn next" onclick="nextBookPhoto()">Next ▶</button>
+            </div>
+        </div>
+        <button class="close-book-btn" onclick="closeMemoryBook()">Close Book</button>
+    </div>
+
+    <div class="made-by">Made by Matheesha</div>
+
+    <script>
+        const canvas = document.getElementById('sceneCanvas');
+        const ctx = canvas.getContext('2d');
+        const bgAudio = document.getElementById('bgAudio');
+        const soundBtn = document.getElementById('soundBtn');
+        const treeActions = document.getElementById('treeActions');
+        const treeWishCard = document.getElementById('treeWishCard');
+
+        let width = 0, height = 0, dpr = 1;
+        function resize() {
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function beginScene() {
+            bgAudio.play().then(() => {
+                soundBtn.textContent = "🔊";
+            }).catch(() => {
+                soundBtn.textContent = "🔇";
+            });
+            const gate = document.getElementById('startGate');
+            gate.style.opacity = '0';
+            setTimeout(() => {
+                gate.style.display = 'none';
+                resetStageState();
+            }, 500);
+        }
+
+        function toggleAudio() {
+            if (bgAudio.paused) {
+                bgAudio.play();
+                soundBtn.textContent = "🔊";
+            } else {
+                bgAudio.pause();
+                soundBtn.textContent = "🔇";
+            }
+        }
+
+        /* =====================================================
+           STAGES: 'aim' -> 'flying' -> 'ribbon' -> 'tree'
+        ===================================================== */
+        let stage = 'aim';
+        let stageTimer = 0;
+
+        function getHeartPos() {
+            return {
+                x: width * 0.5,
+                y: Math.min(height * 0.34, 240)
+            };
+        }
+
+        function getBowRestPos() {
+            return {
+                x: width * 0.5,
+                y: Math.min(height * 0.74, height - 135)
+            };
+        }
+
+        let isDragging = false;
+        let pullVec = { x: 0, y: 0 };
+        let arrow = { x: 0, y: 0, vx: 0, vy: 0, angle: -Math.PI / 2, active: false };
+        let sparkles = [];
+        let blossoms = [];
+
+        function resetStageState() {
+            stage = 'aim';
+            stageTimer = 0;
+            isDragging = false;
+            pullVec = { x: 0, y: 0 };
+            arrow.active = false;
+            sparkles = [];
+            blossoms = [];
+            treeActions.classList.remove('visible');
+            treeWishCard.classList.remove('show');
+        }
+        resetStageState();
+
+        function restartAll() {
+            photoIndex = 0;
+            renderBookPhoto();
+            resetStageState();
+        }
+
+        function getPointer(e) {
+            const p = e.touches && e.touches[0] ? e.touches[0] : e;
+            return { x: p.clientX, y: p.clientY };
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (stage !== 'aim') return;
+            isDragging = true;
+            updatePull(getPointer(e));
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (!isDragging || stage !== 'aim') return;
+            updatePull(getPointer(e));
+        });
+
+        window.addEventListener('pointerup', () => {
+            if (!isDragging || stage !== 'aim') return;
+            isDragging = false;
+            if (Math.hypot(pullVec.x, pullVec.y) > 14) {
+                shootArrow();
+            } else {
+                pullVec = { x: 0, y: 0 };
+            }
+        });
+
+        function updatePull(pt) {
+            const rest = getBowRestPos();
+            let dx = pt.x - rest.x;
+            let dy = Math.max(0, pt.y - rest.y);
+            const maxPull = 95;
+            const len = Math.hypot(dx, dy);
+            if (len > maxPull) {
+                dx = (dx / len) * maxPull;
+                dy = (dy / len) * maxPull;
+            }
+            pullVec = { x: dx, y: dy };
+        }
+
+        function shootArrow() {
+            const rest = getBowRestPos();
+            const heart = getHeartPos();
+            const aimX = heart.x - pullVec.x * 1.1;
+            const aimY = heart.y;
+            const startX = rest.x - pullVec.x * 0.45;
+            const startY = rest.y + pullVec.y * 0.45;
+
+            const dx = aimX - startX;
+            const dy = aimY - startY;
+            const dist = Math.hypot(dx, dy) || 1;
+            const speed = 16;
+
+            arrow = {
+                x: startX,
+                y: startY,
+                vx: (dx / dist) * speed,
+                vy: (dy / dist) * speed,
+                angle: Math.atan2(dy, dx),
+                active: true
+            };
+            stage = 'flying';
+        }
+
+        function spawnBurst(x, y, count, colors) {
+            for (let i = 0; i < count; i++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = Math.random() * 4.4 + 1.2;
+                sparkles.push({
+                    x, y,
+                    vx: Math.cos(ang) * spd,
+                    vy: Math.sin(ang) * spd - 1,
+                    size: Math.random() * 4 + 2,
+                    alpha: 1,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+        }
+
+        /* =====================================================
+           3D-SHADED ELEMENTS
+        ===================================================== */
+        function draw3DHeart(cx, cy, scale, pulse = 1, rot = 0) {
+            const s = scale * pulse;
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(rot);
+            ctx.scale(s, s);
+
+            ctx.shadowColor = 'rgba(255, 82, 145, 0.5)';
+            ctx.shadowBlur = 22;
+
+            const grad = ctx.createRadialGradient(-0.32, -0.35, 0.12, 0.1, 0.15, 1.35);
+            grad.addColorStop(0, '#ffd6e6');
+            grad.addColorStop(0.32, '#ff77a9');
+            grad.addColorStop(0.75, '#e83e7c');
+            grad.addColorStop(1, '#ad1d52');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(0, -0.35);
+            ctx.bezierCurveTo(0.55, -0.95, 1.35, -0.22, 0, 0.92);
+            ctx.bezierCurveTo(-1.35, -0.22, -0.55, -0.95, 0, -0.35);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.beginPath();
+            ctx.ellipse(-0.42, -0.36, 0.2, 0.11, -0.55, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function draw3DBowAndArrow() {
+            const rest = getBowRestPos();
+            const heart = getHeartPos();
+            const pullMag = Math.hypot(pullVec.x, pullVec.y);
+
+            let aimAngle = Math.atan2(heart.y - rest.y, heart.x - rest.x - pullVec.x * 0.8);
+            if (isDragging && pullMag > 5) {
+                aimAngle = Math.atan2(-pullVec.y, -pullVec.x);
+            }
+
+            const bowX = rest.x - pullVec.x * 0.25;
+            const bowY = rest.y + pullVec.y * 0.25;
+            const bowRadius = 44;
+
+            ctx.save();
+            ctx.translate(bowX, bowY);
+            ctx.rotate(aimAngle);
+
+            const stringPull = Math.min(pullMag * 0.55, 38);
+            const topTip = { x: 8, y: -bowRadius };
+            const botTip = { x: 8, y: bowRadius };
+            const nockPos = { x: -12 - stringPull, y: 0 };
+
+            ctx.strokeStyle = 'rgba(72, 46, 54, 0.72)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(topTip.x, topTip.y);
+            ctx.lineTo(nockPos.x, nockPos.y);
+            ctx.lineTo(botTip.x, botTip.y);
+            ctx.stroke();
+
+            const bowGrad = ctx.createLinearGradient(-10, -bowRadius, 24, bowRadius);
+            bowGrad.addColorStop(0, '#6b444c');
+            bowGrad.addColorStop(0.5, '#362126');
+            bowGrad.addColorStop(1, '#7a4d57');
+
+            ctx.strokeStyle = bowGrad;
+            ctx.lineWidth = 5.5;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.quadraticCurveTo(26, 0, topTip.x, topTip.y);
+            ctx.moveTo(16, 0);
+            ctx.quadraticCurveTo(26, 0, botTip.x, botTip.y);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#b84a72';
+            ctx.lineWidth = 7;
+            ctx.beginPath();
+            ctx.moveTo(13, -8);
+            ctx.lineTo(13, 8);
+            ctx.stroke();
+
+            if (stage === 'aim') {
+                const arrowLen = 68;
+                const tipX = nockPos.x + arrowLen;
+
+                ctx.strokeStyle = '#3b262b';
+                ctx.lineWidth = 2.4;
+                ctx.beginPath();
+                ctx.moveTo(nockPos.x, 0);
+                ctx.lineTo(tipX, 0);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ff6b9d';
+                ctx.beginPath();
+                ctx.moveTo(nockPos.x + 2, 0);
+                ctx.lineTo(nockPos.x + 14, -7);
+                ctx.lineTo(nockPos.x + 18, 0);
+                ctx.lineTo(nockPos.x + 14, 7);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2b1b1f';
+                ctx.beginPath();
+                ctx.moveTo(tipX + 9, 0);
+                ctx.lineTo(tipX - 3, -5.5);
+                ctx.lineTo(tipX - 3, 5.5);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            ctx.restore();
+
+            if (stage === 'flying' && arrow.active) {
+                ctx.save();
+                ctx.translate(arrow.x, arrow.y);
+                ctx.rotate(arrow.angle);
+
+                ctx.strokeStyle = '#3b262b';
+                ctx.lineWidth = 2.6;
+                ctx.beginPath();
+                ctx.moveTo(-36, 0);
+                ctx.lineTo(22, 0);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ff5c93';
+                ctx.beginPath();
+                ctx.moveTo(-34, 0);
+                ctx.lineTo(-22, -7);
+                ctx.lineTo(-18, 0);
+                ctx.lineTo(-22, 7);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2b1b1f';
+                ctx.beginPath();
+                ctx.moveTo(31, 0);
+                ctx.lineTo(19, -5.5);
+                ctx.lineTo(19, 5.5);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        function drawRibbonWish(progress) {
+            const alpha = Math.min(progress * 2.2, 1);
+            const bandH = Math.min(height * 0.35, 245);
+            const bandY = (height - bandH) * 0.5;
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            const grad = ctx.createLinearGradient(0, bandY, 0, bandY + bandH);
+            grad.addColorStop(0, '#8f1946');
+            grad.addColorStop(0.16, '#e84382');
+            grad.addColorStop(0.5, '#f25c94');
+            grad.addColorStop(0.84, '#df3877');
+            grad.addColorStop(1, '#7d133b');
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, bandY, width, bandH);
+
+            ctx.strokeStyle = 'rgba(255, 225, 236, 0.45)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(0, bandY + 8);
+            ctx.lineTo(width, bandY + 8);
+            ctx.moveTo(0, bandY + bandH - 8);
+            ctx.lineTo(width, bandY + bandH - 8);
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255, 240, 246, 0.9)';
+            ctx.font = 'italic 500 13px "Playfair Display", serif';
+            ctx.fillText('make a wish...', width * 0.5, bandY + 34);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '700 clamp(32px, 8vw, 48px) "Playfair Display", serif';
+            ctx.fillText('Happy Birthday', width * 0.5, bandY + bandH * 0.49);
+
+            ctx.font = '700 clamp(22px, 6vw, 32px) "Dancing Script", cursive';
+            ctx.fillStyle = '#ffe3ed';
+            ctx.fillText('Liyon • 10th Birthday', width * 0.5, bandY + bandH * 0.70);
+
+            ctx.fillStyle = 'rgba(255, 240, 246, 0.88)';
+            ctx.font = 'italic 12px "Playfair Display", serif';
+            ctx.fillText('to someone worth celebrating', width * 0.5, bandY + bandH - 22);
+
+            ctx.restore();
+        }
+
+        function drawBigBlossomTree(elapsed, timeSec) {
+            const grow = Math.min(elapsed / 1.8, 1);
+            const easeGrow = 1 - Math.pow(1 - grow, 3);
+
+            const isNarrow = width <= 560;
+            const baseX = isNarrow ? width * 0.76 : width * 0.78;
+            const baseY = isNarrow ? height * 0.84 : height * 0.80;
+            const trunkH = Math.min(height * (isNarrow ? 0.22 : 0.28), 195) * easeGrow;
+            const sway = Math.sin(timeSec * 1.5) * 4.5 * easeGrow;
+
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            const trunkGrad = ctx.createLinearGradient(baseX - 12, baseY, baseX + 14, baseY);
+            trunkGrad.addColorStop(0, '#69494f');
+            trunkGrad.addColorStop(0.5, '#3a2429');
+            trunkGrad.addColorStop(1, '#78545b');
+
+            ctx.strokeStyle = trunkGrad;
+            ctx.lineWidth = isNarrow ? 9 : 11;
+
+            const topX = baseX + sway * 0.6;
+            const topY = baseY - trunkH;
+
+            ctx.beginPath();
+            ctx.moveTo(baseX, baseY);
+            ctx.quadraticCurveTo(baseX - 5, baseY - trunkH * 0.5, topX, topY);
+            ctx.stroke();
+
+            const branchTips = [];
+            if (easeGrow > 0.18) {
+                const bProg = (easeGrow - 0.18) / 0.82;
+                const bScaleX = Math.min(width * 0.16, 74) * bProg;
+                const bScaleY = Math.min(height * 0.15, 76) * bProg;
+
+                const branches = [
+                    { sx: baseX, sy: baseY - trunkH * 0.42, ex: baseX - bScaleX + sway, ey: baseY - trunkH * 0.86, w: 6.5 },
+                    { sx: baseX, sy: baseY - trunkH * 0.56, ex: baseX + bScaleX + sway, ey: baseY - trunkH * 0.94, w: 6.5 },
+                    { sx: topX, sy: topY + 12, ex: topX - bScaleX * 0.62 + sway, ey: topY - bScaleY * 0.72, w: 5 },
+                    { sx: topX, sy: topY + 10, ex: topX + bScaleX * 0.68 + sway, ey: topY - bScaleY * 0.68, w: 5 },
+                    { sx: topX, sy: topY + 5, ex: topX + sway, ey: topY - bScaleY * 0.95, w: 4.5 }
+                ];
+
+                branches.forEach((b) => {
+                    ctx.strokeStyle = '#472d33';
+                    ctx.lineWidth = b.w;
+                    ctx.beginPath();
+                    ctx.moveTo(b.sx, b.sy);
+                    ctx.quadraticCurveTo((b.sx + b.ex) * 0.5, b.sy - 16, b.ex, b.ey);
+                    ctx.stroke();
+                    branchTips.push({ x: b.ex, y: b.ey });
+                });
+            }
+
+            if (easeGrow > 0.5) {
+                const hProg = (easeGrow - 0.5) / 0.5;
+                const crownOffsets = [
+                    [-20, -10], [18, -12], [0, -22], [-30, 7], [28, 6],
+                    [-11, 13], [12, 13], [0, -2]
+                ];
+
+                branchTips.forEach((tip, ti) => {
+                    crownOffsets.forEach(([ox, oy], oi) => {
+                        const hx = tip.x + ox * hProg + Math.sin(timeSec * 2.1 + ti * 1.3 + oi) * 2.8;
+                        const hy = tip.y + oy * hProg + Math.cos(timeSec * 1.8 + ti + oi * 0.7) * 2.2;
+                        const rot = Math.sin(timeSec * 1.5 + oi + ti) * 0.14;
+                        draw3DHeart(hx, hy, (isNarrow ? 8.5 : 10.5) * hProg, 1 + Math.sin(timeSec * 3 + oi) * 0.05, rot);
+                    });
+                });
+
+                if (Math.random() < 0.2 && blossoms.length < 34) {
+                    const tip = branchTips[Math.floor(Math.random() * branchTips.length)];
+                    blossoms.push({
+                        x: tip.x + (Math.random() - 0.5) * 40,
+                        y: tip.y + (Math.random() - 0.5) * 20,
+                        vx: -0.5 - Math.random() * 0.85,
+                        vy: 0.65 + Math.random() * 0.8,
+                        rot: (Math.random() - 0.5) * 0.4,
+                        vRot: (Math.random() - 0.5) * 0.03,
+                        scale: 7 + Math.random() * 4,
+                        alpha: 0.95
+                    });
+                }
+            }
+
+            ctx.restore();
+
+            for (let i = blossoms.length - 1; i >= 0; i--) {
+                const bl = blossoms[i];
+                bl.x += bl.vx + Math.sin(timeSec * 2 + i) * 0.35;
+                bl.y += bl.vy;
+                bl.rot += bl.vRot;
+                bl.alpha -= 0.0022;
+                if (bl.y > height + 30 || bl.alpha <= 0) {
+                    blossoms.splice(i, 1);
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = bl.alpha;
+                    draw3DHeart(bl.x, bl.y, bl.scale, 1, bl.rot);
+                    ctx.restore();
+                }
+            }
+        }
+
+        /* =====================================================
+           MEMORY BOOK (ALL 3 PHOTOS)
+        ===================================================== */
+        const bookPhotosData = [
+            {
+                src: "https://files.catbox.moe/zllc84.jpg",
+                title: "Little Liyon",
+                sub: "Happy 10th Birthday! Always smiling & shining."
+            },
+            {
+                src: "https://files.catbox.moe/qk8pix.jpg",
+                title: "Sweet Memories",
+                sub: "Wishing you endless happiness, love & success!"
+            },
+            {
+                src: "https://files.catbox.moe/xssm4c.jpg",
+                title: "Best Little Brother",
+                sub: "So lucky to have you as my brother. Love you! 🫂❤️"
+            }
+        ];
+
+        let photoIndex = 0;
+        const bookOverlay = document.getElementById('bookOverlay');
+        const bookActiveImg = document.getElementById('bookActiveImg');
+        const bookPageTag = document.getElementById('bookPageTag');
+        const bookPhotoTitle = document.getElementById('bookPhotoTitle');
+        const bookPhotoSub = document.getElementById('bookPhotoSub');
+
+        function renderBookPhoto() {
+            const item = bookPhotosData[photoIndex];
+            bookActiveImg.style.opacity = '0.25';
+            bookActiveImg.src = item.src;
+            bookActiveImg.onload = () => {
+                bookActiveImg.style.opacity = '1';
+            };
+            // Fallback in case cache is instant
+            setTimeout(() => { bookActiveImg.style.opacity = '1'; }, 80);
+
+            bookPageTag.textContent = `Liyon's Memory Book • ${photoIndex + 1} / ${bookPhotosData.length}`;
+            bookPhotoTitle.textContent = item.title;
+            bookPhotoSub.textContent = item.sub;
+        }
+
+        function openMemoryBook() {
+            renderBookPhoto();
+            bookOverlay.classList.add('open');
+        }
+
+        function closeMemoryBook() {
+            bookOverlay.classList.remove('open');
+        }
+
+        function nextBookPhoto() {
+            photoIndex = (photoIndex + 1) % bookPhotosData.length;
+            renderBookPhoto();
+        }
+
+        function prevBookPhoto() {
+            photoIndex = (photoIndex - 1 + bookPhotosData.length) % bookPhotosData.length;
+            renderBookPhoto();
+        }
+
+        /* =====================================================
+           MAIN RENDER LOOP
+        ===================================================== */
+        let lastTime = performance.now();
+
+        function loop(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+            const timeSec = now / 1000;
+
+            const bg = ctx.createRadialGradient(width * 0.5, height * 0.45, 20, width * 0.5, height * 0.5, Math.max(width, height) * 0.75);
+            bg.addColorStop(0, '#fffaf7');
+            bg.addColorStop(0.6, '#fae8e3');
+            bg.addColorStop(1, '#f2d5cd');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, width, height);
+
+            const heart = getHeartPos();
+            const rest = getBowRestPos();
+
+            if (stage === 'aim' || stage === 'flying') {
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#8d6d75';
+                ctx.font = 'italic 14px "Playfair Display", serif';
+                ctx.fillText('a little something, for you', width * 0.5, Math.max(46, heart.y - 95));
+                ctx.restore();
+
+                const pulse = 1 + Math.sin(timeSec * 4) * 0.04;
+                const heartScale = Math.min(width, height) * 0.095;
+                draw3DHeart(heart.x, heart.y, heartScale, pulse);
+
+                if (stage === 'flying' && arrow.active) {
+                    arrow.x += arrow.vx;
+                    arrow.y += arrow.vy;
+
+                    if (Math.random() < 0.7) {
+                        sparkles.push({
+                            x: arrow.x, y: arrow.y,
+                            vx: (Math.random() - 0.5) * 1.5,
+                            vy: (Math.random() - 0.5) * 1.5,
+                            size: 3, alpha: 0.85,
+                            color: '#ff77a9'
+                        });
+                    }
+
+                    const hitDist = Math.hypot(arrow.x - heart.x, arrow.y - heart.y);
+                    if (hitDist < heartScale * 0.95 || arrow.y < heart.y - 10) {
+                        arrow.active = false;
+                        spawnBurst(heart.x, heart.y, 30, ['#ff5c93', '#ff9ebb', '#ffd6e6', '#e83e7c']);
+                        stage = 'ribbon';
+                        stageTimer = 0;
+                    }
+                }
+
+                draw3DBowAndArrow();
+
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'rgba(116, 74, 86, 0.82)';
+                ctx.font = '600 10px "Poppins", sans-serif';
+                ctx.fillText(
+                    isDragging ? 'RELEASE TO SHOOT HEART' : 'DRAG DOWN TO PULL & RELEASE',
+                    width * 0.5,
+                    Math.min(height - 54, rest.y + 84)
+                );
+                ctx.restore();
+
+            } else if (stage === 'ribbon') {
+                stageTimer += dt;
+                drawRibbonWish(stageTimer);
+                if (stageTimer >= 2.8) {
+                    stage = 'tree';
+                    stageTimer = 0;
+                }
+
+            } else if (stage === 'tree') {
+                stageTimer += dt;
+                drawBigBlossomTree(stageTimer, timeSec);
+                if (stageTimer > 0.45) {
+                    treeWishCard.classList.add('show');
+                }
+                if (stageTimer > 1.2) {
+                    treeActions.classList.add('visible');
+                }
+            }
+
+            for (let i = sparkles.length - 1; i >= 0; i--) {
+                const sp = sparkles[i];
+                sp.x += sp.vx;
+                sp.y += sp.vy;
+                sp.vy += 0.08;
+                sp.alpha -= 0.022;
+                if (sp.alpha <= 0) {
+                    sparkles.splice(i, 1);
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = sp.alpha;
+                    ctx.fillStyle = sp.color;
+                    ctx.beginPath();
+                    ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
